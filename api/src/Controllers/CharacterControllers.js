@@ -1,12 +1,12 @@
 const axios = require("axios");
 const {Characters, Episodes} = require("../db.js")
-const URL = "https://rickandmortyapi.com/api/character";
-const { v4: uuidv4 } = require("uuid")
+const URL = "https://rickandmortyapi.com/api/character/";
+
 
 async function getCharacters(req, res, next){
     try {
-       let characters =(await axios.get(URL)).data.results 
-       characters= characters.map(e=>{
+       let apiCharacters =(await axios.get(URL)).data.results 
+       apiCharacters= apiCharacters.map(e=>{
         return {
             id:e.id,
             name: e.name,
@@ -16,7 +16,11 @@ async function getCharacters(req, res, next){
         }
        })
 
-       res.json(characters)
+       let dbCharacters = await Characters.findAll({include: Episodes})
+       
+       let allCharacters = dbCharacters.concat(apiCharacters)
+
+       res.json(allCharacters)
        
         
     } catch (error) {
@@ -26,10 +30,53 @@ async function getCharacters(req, res, next){
 }
 
 async function getCharactersById(req, res, next){
+    try {
+        let {id} = req.params
+        if(id<2000){
+        let apiCharacter= (await axios.get(URL+id)).data
+        var character={
+            id: apiCharacter.id,
+            name: apiCharacter.name,
+            status: apiCharacter.status,
+            location: apiCharacter.location.name,
+            image: apiCharacter.image
+        }
+    }else{
+        var character= await Characters.findByPk(id)
+    }   
+    res.json(character)
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+function createCharacter(req, res, next){
+    try {
+        let {image, name, status, epId} = req.body
+        let newCharacter ={            
+            image,
+            name,
+            status
+        }
+
+        Characters.create(newCharacter)
+        .then(character=>{
+          character.addEpisode(epId) 
+          res.json({...character, epId}) 
+        } )
+
+
+
+    } catch (error) {
+        next(error)
+    }
 }
 
 module.exports={
     getCharacters,
-    getCharactersById
+    getCharactersById,
+    createCharacter
 }
+
+

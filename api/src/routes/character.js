@@ -1,10 +1,10 @@
 const { Router } = require('express');
-const { getCharacters} =require("../Controllers/CharacterControllers")
+const { getCharacters, getCharactersById, createCharacter} =require("../Controllers/CharacterControllers")
 const router = Router();
 
 router.get("/", getCharacters) 
-router.get("/one/:id", ) 
-router.post("/add", ) 
+router.get("/:id", getCharactersById ) 
+router.post("/add", createCharacter) 
 router.get("/searchCharacter/:name", ) 
 
 
