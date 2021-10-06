@@ -1,31 +1,71 @@
 const axios = require("axios");
-const {Characters, Episodes} = require("../db.js")
+const {Characters, Episodes, Op} = require("../db.js")
 const URL = "https://rickandmortyapi.com/api/character/";
+ 
 
 
 async function getCharacters(req, res, next){
     try {
-       let apiCharacters =(await axios.get(URL)).data.results 
-       apiCharacters= apiCharacters.map(e=>{
-        return {
-            id:e.id,
-            name: e.name,
-            status: e.status,
-            image: e.image,
-            location: e.location.name
+        let {
+            name,
+            order,
+            page
+        } = req.query
+        //orden pag /filtrado name
+        //name
+        //orden
+        //pag
+        //https://rickandmortyapi.com/api/character/?name=
+        let apiCharacters
+        let dbCharacters
+        let allChars=[]
+        page = page || 1 
+        const charXPage = 5;
+        //#region NAME
+        if(name && name !== ""){
+            apiCharacters = (await axios.get(`https://rickandmortyapi.com/api/character/?name=${name}`)).data.results
+            dbCharacters= await Characters.findAll({
+                where:{
+                    name:{
+                        [Op.iLike]: `%${name}%`  
+                    }
+                }
+            })
+            allChars= dbCharacters.concat(apiCharacters)
         }
-       })
+        else{
+            
+            apiCharacters = (await axios.get("https://rickandmortyapi.com/api/character")).data.results
+            dbCharacters= await Characters.findAll({include: Episodes})
 
-       let dbCharacters = await Characters.findAll({include: Episodes})
-       
-       let allCharacters = dbCharacters.concat(apiCharacters)
-
-       res.json(allCharacters)
-       
+            allChars= dbCharacters.concat(apiCharacters)
+        }
+        //#endregion
         
+        //#region ORDER
+        if(order === "asc" || !order || order === ""){
+            allChars = allChars.sort((a,b) =>{
+                return a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+            })
+        }else{
+            allChars = allChars.sort((a,b) =>{
+                return b.name.toLowerCase().localeCompare(a.name.toLowerCase())
+            })
+        }
+        //#endregion
+
+        //#region PAGE
+            let result = allChars.slice((charXPage * (page -  1)) , (charXPage * (page -  1)) + charXPage ) 
+        //#endregion
+        
+        return res.send({
+            result: result, 
+            count: allChars.length
+        })
+      
+
     } catch (error) {
         next(error)
-        
     }
 }
 

@@ -1,8 +1,10 @@
 const { Router } = require('express');
-//const {   } = require('../controllers/episodeController');
+const { getEpisodes  } = require('../Controllers/EpisodeControllers');
 
 const router = Router();
-router.get("/", );
+router.get("/", getEpisodes);
+
+
 
 
 module.exports = router;

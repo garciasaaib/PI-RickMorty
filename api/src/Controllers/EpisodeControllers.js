@@ -10,7 +10,7 @@ async function preCharge(){
         })
 
         episodes=  await Promise.all(episodes.map(e=> Episodes.findOrCreate({where: e})))
-
+        console.log("Episodios cargados exitosamente")
         return "Episodios cargados exitosamente"
 
     } catch (error) {
@@ -18,6 +18,18 @@ async function preCharge(){
     }
 }
 
+async function getEpisodes(req, res, next){    
+    try {
+        let episodes = await Episodes.findAll()
+        res.json(episodes)
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
 module.exports={
-    preCharge
+    preCharge,
+    getEpisodes
 }
