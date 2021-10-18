@@ -7,7 +7,7 @@ const episode= require("./episode")
 
 const router = Router();
 
-router.use("/character", character)
+router.use("/characters", character)
 router.use("/episode", episode)
 // Configurar los routers
 // Ejemplo: router.use('/auth', authRouter);

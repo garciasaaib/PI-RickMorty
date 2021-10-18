@@ -9,11 +9,11 @@ import {BrowserRouter} from "react-router-dom";
 
 
 ReactDOM.render(
-  
-    
-      <App />,
-     
-  
+  <Provider store={store} >
+    <BrowserRouter>
+      <App />
+      </BrowserRouter>
+  </Provider>,
   document.getElementById('root')
 );
 
