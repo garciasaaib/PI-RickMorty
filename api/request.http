@@ -1,0 +1,26 @@
+GET http://localhost:3001/episode HTTP/1.1
+
+###
+
+GET http://localhost:3001/character HTTP/1.1
+
+###
+
+GET http://localhost:3001/character/af6beb66-25d2-4a14-b0ea-09231c628fcb HTTP/1.1
+
+###
+
+GET http://localhost:3001/character?name=rick HTTP/1.1
+
+###
+POST http://localhost:3001/character HTTP/1.1
+content-type: application/json
+
+{
+    "name": "morty dito",
+    "status": "Alive",
+    "location": "pokemon go",
+    "epId": "1",
+    "image": "https://rickandmortyapi.com/api/character/avatar/55.jpeg"
+
+}
