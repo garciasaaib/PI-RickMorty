@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,windows,linux,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,windows,linux,macos
@@ -47,6 +48,8 @@ Temporary Items
 .apdisk
 
 ### Node ###
+=======
+>>>>>>> 68636b33c60749470687b400b13519d7a8535f2b
 # Logs
 logs
 *.log
@@ -54,7 +57,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+<<<<<<< HEAD
 .pnpm-debug.log*
+=======
+>>>>>>> 68636b33c60749470687b400b13519d7a8535f2b
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
@@ -91,8 +97,13 @@ build/Release
 node_modules/
 jspm_packages/
 
+<<<<<<< HEAD
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
+=======
+# TypeScript v1 declaration files
+typings/
+>>>>>>> 68636b33c60749470687b400b13519d7a8535f2b
 
 # TypeScript cache
 *.tsbuildinfo
@@ -121,6 +132,7 @@ web_modules/
 # dotenv environment variables file
 .env
 .env.test
+<<<<<<< HEAD
 .env.production
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -130,6 +142,14 @@ web_modules/
 # Next.js build output
 .next
 out
+=======
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+
+# Next.js build output
+.next
+>>>>>>> 68636b33c60749470687b400b13519d7a8535f2b
 
 # Nuxt.js build / generate output
 .nuxt
@@ -137,7 +157,11 @@ dist
 
 # Gatsby files
 .cache/
+<<<<<<< HEAD
 # Comment in the public line in if your project uses Gatsby and not Next.js
+=======
+# Comment in the public line in if your project uses Gatsby and *not* Next.js
+>>>>>>> 68636b33c60749470687b400b13519d7a8535f2b
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
 
@@ -155,6 +179,7 @@ dist
 
 # TernJS port file
 .tern-port
+<<<<<<< HEAD
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
@@ -197,3 +222,5 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/node,windows,linux,macos
+=======
+>>>>>>> 68636b33c60749470687b400b13519d7a8535f2b
