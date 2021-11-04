@@ -1,8 +1,15 @@
 const { Router } = require('express');
-const { getEpisodes } = require('../controllers/episode.controller');
 const router = Router();
+const episodeController = require('../controllers/episode.controller');
 
-router.get("/", getEpisodes)
+router.get("/", async (req, res, next) => {
+  try {
+    const episodeList = await episodeController.getEpisodes()
+    res.json(episodeList)
+  } catch (error) {
+    next(error)
+  }
+})
 
 
 

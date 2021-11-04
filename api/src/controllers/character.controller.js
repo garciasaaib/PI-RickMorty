@@ -1,12 +1,10 @@
 const axios = require('axios');
-const { Op } = require('sequelize');
-const { Characters, Episodes } = require('../db.js')
+const { Characters, Episodes, Op } = require('../db.js')
 const URL = "https://rickandmortyapi.com/api"
 
-async function getCharacters(req, res, next) {
+async function getCharacters(name) {
   try {
     // VERIFYING REQ.QUERIES
-    const { name } = req.query
     const api = `${URL}/character${name ? `?name=${name}` : ''}`
     const dbQuery = name && {
       where: {
@@ -15,7 +13,6 @@ async function getCharacters(req, res, next) {
         }
       }
     }
-
     // API CHARACTERS
     const apiCharacters = (await axios.get(api)).data.results
       .map((char) => ({
@@ -25,62 +22,68 @@ async function getCharacters(req, res, next) {
         image: char.image,
         location: char.location.name,
       })) || []
-
     // DB CHARACTERS
     const dbCharacters = await Characters.findAll(dbQuery)
-
     // ALL CHARACTERS
-    const allCharacters = dbCharacters.concat(apiCharacters)
+    return dbCharacters.concat(apiCharacters)
 
-    // RESPONSE
-    res.json({ length: allCharacters.length, characters: allCharacters })
 
-    } catch (error) { next(error) }
-  }
+  } catch (error) { return error }
+}
 
-async function getCharacterById(req, res, next) {
-    try {
-      const { id } = req.params
-      let character
-
-      // IF IT IS A NUMBER SEARCH IN API
-      if (!isNaN(id * 1)) {
-        const { name, location, status, image } = (await axios.get(`${URL}/character/${id}`)).data
+async function getCharacterById(id) {
+  try {
+    let character
+    let episodesData = []
+    // IF IT IS A NUMBER SEARCH IN API
+    if (!isNaN(id)) {
+      const { name, location, status, image, episode } = (await axios.get(`${URL}/character/${id}`)).data
+      const promisesEpisode = episode.map(epId => axios.get(epId))
+      await Promise.all(promisesEpisode)
+        .then(response => response.forEach(({ data }) => {
+          episodesData.push({
+            id: data.id,
+            name: data.name,
+            episode: data.episode
+          })
+        }))
         character = {
-          id, name, status, image,
-          location: location.name
-        }
+            id, name, status, image,
+            location: location.name,
+            episode: episodesData
+            // .map(epId => epId.match(/\d+/)[0] * 1),
+          }
+      // IF IT IS NOT A NUMBER SEARCH IN DB
+    } else {
 
-        // IF IT IS NOT A NUMBER SEARCH IN DB
-      } else {
-        character = await Characters.findOne({
-          where: {
-            id: id
-          },
-        })
+      character = await Characters.findOne({
+        where: {
+          id: id
+        },
+        include: {
+          model: Episodes,
+          through: { attributes: [] }
+        },
+      })
+    }
+    // RESPONSE
+    return character
+  } catch (error) { return error }
+}
 
-      }
+async function createCharacter(newCharacter, epId) {
+  try {
+    const character = await Characters.create(newCharacter)
+      .then(character => {
+        character.addEpisode(epId)
+        return character
+      })
+    return character
+  } catch (error) { return error }
+}
 
-      // RESPONSE
-      res.json({ data: character })
-    } catch (error) { next(error.message) }
-  }
-
-  async function createCharacter(req, res, next) {
-    try {
-      const { image, name, status, location, epId } = req.body
-      const newCharacter = { image, name, status, location }
-      console.log(newCharacter)
-      await Characters.create(newCharacter)
-        .then(character => {
-          character.addEpisode(epId)
-          res.json({ character: character, id: epId })
-        })
-    } catch (error) { next(error) }
-  }
-
-  module.exports = {
-    getCharacters,
-    getCharacterById,
-    createCharacter,
-  }
+module.exports = {
+  getCharacters,
+  getCharacterById,
+  createCharacter,
+}

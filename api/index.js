@@ -20,11 +20,11 @@
 const server = require('./src/app.js');
 const { conn } = require('./src/db.js');
 const { preChargeEpisodes  } = require('./src/controllers/episode.controller');
-
+const port = 3001
 // Syncing all the models at once.
 conn.sync({ force: true }).then(() => {
-  server.listen(3001, async () => {
+  server.listen(port, async () => {
     preChargeEpisodes()
-    console.log('%s listening at 3001'); // eslint-disable-line no-console
+    console.log(`listening at ${port}`); // eslint-disable-line no-console
   });
 });

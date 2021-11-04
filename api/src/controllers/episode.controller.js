@@ -3,33 +3,28 @@ const axios = require('axios')
 const { Episodes } = require('../db.js')
 const URL = "https://rickandmortyapi.com/api"
 
-async function preChargeEpisodes(req, res, next) {
+async function preChargeEpisodes(req, res) {
   try {
-    let episodes = (await axios.get(URL + "/episode")).data.results
-    episodes = await episodes.map(episode => {
-      return {
-        id: episode.id,
-        name: episode.name,
-        episode: episode.episode
-      }
-    })
+    // initializate
+    let nextUrl = URL + "/episode"
+    let episodes = []
+    // all episodes data
+    while (nextUrl) {
+      let { results, info } = (await axios.get(nextUrl)).data
+      nextUrl = info.next
+      episodes = [...episodes, ...results.map(({ id, name, episode }) => ({ id, name, episode }))]
+    }
+    // save on db
     episodes = Promise.all(
       episodes.map(
-        episode => Episodes.findOrCreate({
-          where: episode
-        })
+        episode => Episodes.findOrCreate({ where: episode })
       )
-    ).then(_ => {
-      console.log("episodios cargados exitosamente");
-    })
+    ).then(_ => console.log("episodios cargados exitosamente"))
   } catch (error) { console.log(error) }
 }
 
-async function getEpisodes(req, res, next) {
-  try {
-    let dbEpisodes = await Episodes.findAll()
-    res.json({ episodes: dbEpisodes })
-  } catch (error) { console.log(error) }
+async function getEpisodes() {
+  return await Episodes.findAll()
 }
 
 module.exports = {
